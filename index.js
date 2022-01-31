@@ -7,7 +7,8 @@ const whitelist = process.env.WHATSAPP_WHITELIST &&
   process.env.WHATSAPP_WHITELIST
     .split(" ")
     .filter((n) => n.length > 0)
-    .map((n) => `${n}@c.us`);
+    .map((n) => `${n}@c.us`)
+  || [];
 
 function getStage(user){
     const estado = banco.db[user] && banco.db[user].stage || 0
@@ -44,7 +45,7 @@ venom
 
 function start(client) {
     client.onMessage(async (message) => {
-        if (whitelist.includes(message.sender.id)) {
+        if (whitelist.length === 0 || whitelist.includes(message.sender.id)) {
             const estado_mensagem = getStage(message.from)
     
             if (message.isGroupMsg === false && estado_mensagem < 12) {
