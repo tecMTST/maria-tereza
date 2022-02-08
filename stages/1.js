@@ -1,16 +1,47 @@
 const banco = require("../banco");
+const stages = require("../stages")
 
-function execute(user, msg) {
-    if (msg === 'Tá osso!') {
-        var frase_nome = 'Massa! Pra começar, me manda seu nome completo, por favor'
-        banco.db[user].stage = 2
-    } else {
-        var frase_nome = `🥺 Eu até queria conversar mas só me ensinaram a fazer cadastro
+async function execute(user, msg, client) {
+    return new Promise(async (resolve) => {
 
-👆 Pra fazer sua incrição é só clicar no botão acima`
-    }
+        let frase_nome;
+        if (msg === 'Tá osso!') {
+            frase_nome = 'Massa! Pra começar, me manda seu nome completo, por favor';
+            banco.db[user].stage = 2
+        } else {
+            frase_nome = `🥺 Eu até queria conversar mas só me ensinaram a fazer cadastro
 
-    return [frase_nome]
+👆 Pra fazer sua incrição é só clicar no botão acima`;
+        }
+
+        let groups = [];
+        let chats = await client.getAllChats();
+        for (let chat of chats) {
+            if (chat.isGroup) {
+                groups.push(chat);
+            }
+        }
+
+        let groupsWithUserAndBot = [];
+        stages.waiting = true
+        for (let group of groups) {
+            let members = await client.getGroupMembers(group.id._serialized);
+
+            let hasBot = members.some(member => member.isMe);
+
+            let hasUser = members.some(member => member.id._serialized === user);
+
+            if (hasBot && hasUser) {
+                groupsWithUserAndBot.push(group.name);
+            }
+        }
+        stages.waiting = false
+
+        console.log(user);
+        console.log(groupsWithUserAndBot);
+        resolve(groupsWithUserAndBot);
+    });
 }
 
 exports.execute = execute
+

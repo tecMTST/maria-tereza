@@ -1,52 +1,55 @@
 const stages = {
     0: {
-        descricao: 'saudacao',
-        obj: require("./stages/0")
+        nome: 'saudacao',
+        especificacao: require("./stages/0")
     },
     1: {
-        descricao: 'nome',
-        obj: require("./stages/1")
+        nome: 'nome',
+        especificacao: require("./stages/1.js")
     },
     2: {
-        descricao: 'confirmacao_nome',
-        obj: require("./stages/2")
+        nome: 'confirmacao_nome',
+        especificacao: require("./stages/2")
     },
     3: {
-        descricao: 'estado',
-        obj: require("./stages/3")
+        nome: 'estado',
+        especificacao: require("./stages/3")
     },
     4: {
-        descricao: 'confirmacao_estado',
-        obj: require("./stages/4")
+        nome: 'confirmacao_estado',
+        especificacao: require("./stages/4")
     },
     5: {
-        descricao: 'cidade',
-        obj: require("./stages/5")
+        nome: 'cidade',
+        especificacao: require("./stages/5")
     },
     6: {
-        descricao: 'confirmacao_cidade',
-        obj: require("./stages/6")
+        nome: 'confirmacao_cidade',
+        especificacao: require("./stages/6")
     },
     7: {
-        descricao: 'acampamento/setor',
-        obj: require("./stages/7")
+        nome: 'acampamento/setor',
+        especificacao: require("./stages/7")
     },
     8: {
-        descricao: 'confirmacao_acampamento/setor',
-        obj: require("./stages/8")
+        nome: 'confirmacao_acampamento/setor',
+        especificacao: require("./stages/8")
     },
     9: {
-        descricao: 'email',
-        obj: require("./stages/9")
+        nome: 'email',
+        especificacao: require("./stages/9")
     },
     10: {
-        descricao: 'confirmacao_email',
-        obj: require("./stages/10")
+        nome: 'confirmacao_email',
+        especificacao: require("./stages/10")
     },
     11: {
-        descricao: 'despedida',
-        obj: require("./stages/11")
-    }
+        nome: 'despedida',
+        especificacao: require("./stages/11")
+    },
+
+    waiting: false
 }
 
-exports.step = stages
+module.exports = stages
+// exports.step = stages
