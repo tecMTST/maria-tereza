@@ -5,7 +5,7 @@ const stages = {
     },
     1: {
         nome: 'nome',
-        especificacao: require("./stages/1.js")
+        especificacao: require("./stages/1")
     },
     2: {
         nome: 'confirmacao_nome',
@@ -47,9 +47,10 @@ const stages = {
         nome: 'despedida',
         especificacao: require("./stages/11")
     },
-
-    waiting: false
 }
 
-module.exports = stages
+module.exports = {
+    stages,
+    // tratarReinicio
+}
 // exports.step = stages

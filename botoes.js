@@ -1,24 +1,33 @@
-const botaoSaudacaoVar = [
-    {
-        "buttonText": {"displayText": "Tá osso!"}
-    }
-];
+const {sim, nao} = require('./strings.js')
 
-const botoesConfirmacao = [
+const botaoSimOuNao = [
     {
-        "buttonText": {"displayText": "Sim!"}
+        "buttonText": {"displayText": sim}
     },
     {
-        "buttonText": {"displayText": "Não!"}
+        "buttonText": {"displayText": nao}
     }
 ];
 
 
-function botaoSaudacao(client) {
-    client.sendButtons(message.from, resposta[0], botao, ' ')
+function fabricarBotoes(valores) {
+    return valores.map(valor => (
+        {
+            "buttonText": {"displayText": valor}
+        }
+    ));
+}
+
+async function confirmaSimOuNao(client, from, message) {
+    await client.sendButtons(from, message, botaoSimOuNao, ' ').catch((erro) => console.log(erro))
+}
+
+async function enviaBotoes(client, from, title, buttons, subtitle = ' ') {
+    await client.sendButtons(from, title, buttons, subtitle).catch((erro) => console.log(erro))
 }
 
 module.exports = {
-    botaoSaudacao,
-    botoesConfirmacao
+    fabricarBotoes,
+    confirmaSimOuNao,
+    enviaBotoes
 }

@@ -1,14 +1,15 @@
-const banco = require("../banco");
+const {db} = require("../banco");
+const {enviaMensagem} = require("../mensagens");
+const {tratarReinicio} = require("../fluxo");
 
-function execute(user, msg) {
-    let confirma_cidade = `Sua cidade então é:
-*${msg}*
-Isso mesmo?`
+async function execute(user, message, client) {
+    tratarReinicio(message, user);
 
-    banco.db[user].stage = 7
-    banco.db[user].cidade = msg
+    let msgEnviar = 'Me envia a imagem aí então por favor';
 
-    return [confirma_cidade]
+    db[user].stage = 7
+
+    await enviaMensagem(client, user, msgEnviar)
 }
 
 exports.execute = execute

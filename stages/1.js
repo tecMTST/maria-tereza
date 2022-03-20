@@ -1,46 +1,31 @@
-const banco = require("../banco");
-const stages = require("../stages")
+const {db} = require("../banco");
+const {sim, nao, souUmBotEmTreinamento} = require("../strings")
+const {enviaMensagem} = require("../mensagens");
+const {listaGruposEmComum} = require("../grupos");
+const {tratarReinicio} = require("../fluxo");
 
-async function execute(user, msg, client) {
-    return new Promise(async (resolve) => {
 
-        let frase_nome;
-        if (msg === 'Tá osso!') {
-            frase_nome = 'Massa! Pra começar, me manda seu nome completo, por favor';
-            banco.db[user].stage = 2
-        } else {
-            frase_nome = `🥺 Eu até queria conversar mas só me ensinaram a fazer cadastro
+async function execute(user, message, client) {
+    tratarReinicio(message, user);
 
-👆 Pra fazer sua incrição é só clicar no botão acima`;
-        }
+    let fraseConfirmaGruposEmComum;
 
-        let groups = [];
-        let chats = await client.getAllChats();
-        for (let chat of chats) {
-            if (chat.isGroup) {
-                groups.push(chat);
-            }
-        }
+    if (message === sim) {
+        fraseConfirmaGruposEmComum = 'Espere só um momento enquanto eu busco os grupos que eu e você ambos fazemos parte...';
+        db[user].stage = 2
+    } else if (message === nao) {
+        fraseConfirmaGruposEmComum = 'Opa, beleza então! Se mudar de ideia é só me chamar, tá?';
+        db[user].stage = 0
+    } else {
+        fraseConfirmaGruposEmComum = souUmBotEmTreinamento
+    }
 
-        let groupsWithUserAndBot = [];
-        stages.waiting = true
-        for (let group of groups) {
-            let members = await client.getGroupMembers(group.id._serialized);
+    await enviaMensagem(client, user, fraseConfirmaGruposEmComum)
 
-            let hasBot = members.some(member => member.isMe);
+    if (message === sim) {
+        await listaGruposEmComum(client, user);
+    }
 
-            let hasUser = members.some(member => member.id._serialized === user);
-
-            if (hasBot && hasUser) {
-                groupsWithUserAndBot.push(group.name);
-            }
-        }
-        stages.waiting = false
-
-        console.log(user);
-        console.log(groupsWithUserAndBot);
-        resolve(groupsWithUserAndBot);
-    });
 }
 
 exports.execute = execute

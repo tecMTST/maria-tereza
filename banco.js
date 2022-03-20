@@ -1,6 +1,5 @@
+const db = {};
 
-var banco = {
-    
+module.exports = {
+    db: db
 }
-
-exports.db = banco

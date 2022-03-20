@@ -1,19 +1,28 @@
-const banco = require("../banco");
+const {db} = require("../banco");
+const {sim, nao, souUmBotEmTreinamento} = require("../strings")
+const {listaGruposEmComum} = require("../grupos");
+const {enviaMensagem} = require("../mensagens");
 
-function execute(user, msg) {
-    if (msg === 'Sim!') {
-        var frase_estado = 'Agora eu preciso que você me mande de qual Estado você é'
-        banco.db[user].stage = 4
-    } else if (msg === 'Não!') {
-        var frase_estado = 'Opa, vou perguntar de novo então. Qual é seu nome completo?'
-        banco.db[user].stage = 2
+async function execute(user, message, client) {
+    // tratarReinicio(message, user);
+
+    let fraseConfirmaTexto;
+    if (message === sim) {
+        fraseConfirmaTexto = 'Show! Agora digite logo abaixo a mensagem que você quer enviar';
+        db[user].stage = 4
+    } else if (message === nao) {
+        fraseConfirmaTexto = `Tá. Vou então listar novamente os grupos que eu e você ambos fazemos parte, e aí você escolhe.
+ Só um instante...`;
+        db[user].stage = 2
     } else {
-        var frase_estado = `😅 Sou um bot em treinamento, não sei muitas palavras
-
-🔘 Então peço que você use os botões pra confirmar suas informações tá bom? Clica ali em cima em um deles que eu volto a funcionar normalmente`
+        fraseConfirmaTexto = souUmBotEmTreinamento;
     }
 
-    return [frase_estado]
+    await enviaMensagem(client, user, fraseConfirmaTexto)
+
+    if (message === nao) {
+        await listaGruposEmComum(client, user);
+    }
 }
 
 exports.execute = execute
