@@ -1,0 +1,59 @@
+version: '3'
+
+services:
+  maria-tereza-nest:
+    build:
+      context: .
+      dockerfile: ./maria-tereza-api/nest.dockerfile
+    container_name: maria-tereza-api
+    volumes:
+      - ./maria-tereza-api:/var/www
+    ports:
+      - "3001:3000"
+    env_file:
+      - ./maria-tereza-api/production.env
+    networks:
+      - maria-tereza-network
+    depends_on:
+      - "maria-tereza-mongo"
+  maria-tereza-venom:
+    build:
+      context: .
+      dockerfile: ./venom/venom.dockerfile
+    container_name: maria-tereza-venom
+    volumes:
+      - ./venom:/var/www
+    env_file:
+      - ./venom/production.env
+    networks:
+      - maria-tereza-network
+    depends_on:
+        - "maria-tereza-nest"
+  maria-tereza-mongo:
+    build:
+      context: .
+    image: mongo:latest
+    container_name: maria-tereza-db
+    volumes:
+      - ./database:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - maria-tereza-network
+networks:
+  maria-tereza-network:
+    driver: bridge
+
+
+# maria-tereza-venom:
+#   build:
+#     context: .
+#     dockerfile: ./venom/venom.dockerfile
+#   container_name: maria-tereza-venom
+#   volumes:
+#     - ./venom/node_modules:/var/www/node_modules
+#   image: node
+#   networks:
+#     - maria-tereza-network
+#   depends_on:
+#       - "maria-tereza-nest"

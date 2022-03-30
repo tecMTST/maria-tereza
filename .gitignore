@@ -1,0 +1,4 @@
+database/
+!database/README.md
+*/node_modules
+*-lock.*

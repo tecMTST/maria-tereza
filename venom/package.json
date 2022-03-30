@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "start": "node socket-client.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "sharp": "^0.30.3",
+    "socket.io-client": "^4.4.1",
+    "venom-bot": "^4.0.9"
+  }
+}
