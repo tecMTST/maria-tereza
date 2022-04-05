@@ -5,11 +5,11 @@ const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'login',
+    redirectTo: 'auth',
   },
   {
-    path: 'login',
-    loadChildren: () => import('./pages/login/login.module').then((m) => m.LoginModule),
+    path: 'auth',
+    loadChildren: () => import('./auth/auth.module').then((m) => m.AuthModule),
   },
 ];
 
