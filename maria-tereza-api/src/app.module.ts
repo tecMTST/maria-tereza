@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { AppConfigModule } from './app-config/app-config.module';
+import { AppConfigService } from './app-config/app-config.service';
 import { ChatModule } from './chat/chat.module';
 import { ContactsModule } from './contacts/contacts.module';
 import { MessagesModule } from './messages/messages.module';
 import { SchedulerModule } from './scheduler/scheduler.module';
-import { AppConfigModule } from './app-config/app-config.module';
-import { AppConfigService } from './app-config/app-config.service';
 @Module({
   imports: [
     AppConfigModule,
@@ -19,7 +19,7 @@ import { AppConfigService } from './app-config/app-config.service';
     ChatModule,
     ContactsModule,
     MessagesModule,
-    SchedulerModule,
+    SchedulerModule, 
   ],
 })
 export class AppModule {
