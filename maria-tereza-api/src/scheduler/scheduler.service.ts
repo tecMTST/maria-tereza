@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Cron } from '@nestjs/schedule';
 import { DeleteResult } from 'mongodb';
 import { Model } from 'mongoose';
 import { ChatGateway } from 'src/chat/chat.gateway';
@@ -78,16 +77,16 @@ export class SchedulerService {
     }
   }
 
-  @Cron(`0 */5 * * * *`)
-  async handleCron() {
-    const nextMessage = await this.findNextMessage();
-    if (nextMessage.length > 0) {
-      const { message, sendToContact, sentToContact } = nextMessage[0];
-      const toContact = await this.getContact(sendToContact, sentToContact);
-      await this.awaitToSend();
-      await this.sendMessage(message, toContact, nextMessage);
-    }
-  }
+  // @Cron(`0 */5 * * * *`)
+  // async handleCron() {
+  //   const nextMessage = await this.findNextMessage();
+  //   if (nextMessage.length > 0) {
+  //     const { message, sendToContact, sentToContact } = nextMessage[0];
+  //     const toContact = await this.getContact(sendToContact, sentToContact);
+  //     await this.awaitToSend();
+  //     await this.sendMessage(message, toContact, nextMessage);
+  //   }
+  // }
 
   private async sendMessage(message: MessageDocument, toContact: ContactDocument, nextMessage: SchedulerDocument[]) {
     const _message = { message: message, to: toContact.phoneNumber };

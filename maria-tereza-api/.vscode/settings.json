@@ -1,7 +1,8 @@
 {
-    "cSpell.words": [
-        "maxlength",
-        "tereza",
-        "websockets"
-    ]
+  "material-icon-theme.activeIconPack": "nest",
+  "cSpell.words": [
+    "maxlength",
+    "tereza",
+    "websockets"
+  ]
 }

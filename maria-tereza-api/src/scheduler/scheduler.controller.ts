@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Param, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
+import { ParseMongoObjectIdPipe } from 'src/common/pipes/parse-mongo-object-id.pipe';
 import { CreateSchedulerDto } from './dto/create-scheduler.dto';
 import { UpdateSchedulerDto } from './dto/update-scheduler.dto';
 import { SchedulerService } from './scheduler.service';
@@ -19,7 +20,7 @@ export class SchedulerController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseMongoObjectIdPipe) id: string) {
     return this.schedulerService.findById(id);
   }
 

@@ -1,6 +1,8 @@
-import { Body, Controller, Get, Param, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { ParseMongoObjectIdPipe } from 'src/common/pipes/parse-mongo-object-id.pipe';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { MessagesService } from './messages.service';
+import { JwtGuard } from '../auth/jwt/jwt.guard';
 
 @Controller('messages')
 export class MessagesController {
@@ -12,13 +14,14 @@ export class MessagesController {
     return this.messagesService.create(createMessageDto);
   }
 
+  @UseGuards(JwtGuard)
   @Get()
   findAll() {
     return this.messagesService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseMongoObjectIdPipe) id: string) {
     return this.messagesService.findById(id);
   }
 
