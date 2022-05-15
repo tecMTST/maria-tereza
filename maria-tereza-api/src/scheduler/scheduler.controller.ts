@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { ParseMongoObjectIdPipe } from 'src/common/pipes/parse-mongo-object-id.pipe';
 import { CreateSchedulerDto } from './dto/create-scheduler.dto';
 import { UpdateSchedulerDto } from './dto/update-scheduler.dto';
@@ -9,7 +9,6 @@ export class SchedulerController {
   constructor(private readonly schedulerService: SchedulerService) {}
 
   @Post()
-  @UsePipes(ValidationPipe)
   create(@Body() createSchedulerDto: CreateSchedulerDto) {
     return this.schedulerService.create(createSchedulerDto);
   }
@@ -25,7 +24,6 @@ export class SchedulerController {
   }
 
   @Put()
-  @UsePipes(ValidationPipe)
   update(@Body() updateSchedulerDto: UpdateSchedulerDto) {
     return this.schedulerService.update(updateSchedulerDto);
   }

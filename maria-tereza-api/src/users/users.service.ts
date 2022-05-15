@@ -45,12 +45,19 @@ export class UsersService {
     }
 
     async update(param: UpdateUserDto): Promise<UserDocument> {
-        let updateObject = { param };
+        let updateObject = { ...param };
         if (!!param.password) {
             updateObject['password'] = await this.authService.hashPassword(param.password)
         }
         this.logger.log(`update:  ${JSON.stringify(updateObject)}`);
         return this.model.findByIdAndUpdate(param._id, { $set: updateObject }).exec();
+    }
+    async updateRefreshToken(_id: string, refreshToken: string): Promise<UserDocument> {
+        this.logger.log(`updateRefreshToken`);
+        return await this.update({
+            _id,
+            refreshToken
+        })
     }
 
     private async validateUser(email: string, passwd: string): Promise<any> {
@@ -59,14 +66,20 @@ export class UsersService {
             .populate('password')
             .exec()
             .then(async (user: UserDocument) => {
-                const { password, name,
-                    email } = user;
+                const {
+                    password,
+                    name,
+                    email,
+                    _id
+                } = user;
                 const isValid = await this.authService.validatePasswordCredential(passwd, password);
                 return {
-                    isValid, user: {
+                    isValid,
+                    user: {
                         name,
                         email
-                    }
+                    },
+                    _id
                 }
             });
     }
@@ -74,11 +87,29 @@ export class UsersService {
     async login(email: string, passwd: string): Promise<any> {
         return this.validateUser(email, passwd)
             .then(async (payload: any) => {
-                const { isValid, user } = payload
+                const { isValid, user, _id } = payload
                 if (isValid) {
-                    return { access_token: await this.authService.generateJWT(user) }
+                    const tokens = await this.authService.getTokens(user);
+                    await this.updateRefreshToken(_id, tokens.refreshToken);
+                    return tokens
                 }
                 throw new UnauthorizedException('Invalid Access')
             });
+    }
+
+    async logout(email: string): Promise<any> {
+        return this.findByEmail(email).then(async (user: UserDocument) => {
+            return this.updateRefreshToken(user._id, null);
+        })
+    }
+
+    async refreshToken(email: string, refreshToken: string): Promise<any> {
+        return this.findByEmail(email).then(async (user: UserDocument) => {
+            if (user.refreshToken === refreshToken) {
+                const tokens = await this.authService.refreshToken(refreshToken);
+                return tokens;
+            }
+            throw new UnauthorizedException('Invalid Access')
+        });
     }
 }

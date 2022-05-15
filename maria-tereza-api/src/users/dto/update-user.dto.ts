@@ -7,4 +7,6 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
     @IsNotEmpty()
     @Validate(ParseMongoObjectIdPipe)
     readonly _id: string;
+    
+    readonly refreshToken: string;
 }
