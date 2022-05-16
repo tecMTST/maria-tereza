@@ -1,8 +1,8 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { DeleteResult } from "mongodb";
 import { Model } from 'mongoose';
-import { AuthService } from './../auth/auth/auth.service';
+import { AuthService } from 'src/auth/auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './entities/user.entity';
@@ -13,6 +13,7 @@ export class UsersService {
 
     constructor(
         @InjectModel(User.name) protected readonly model: Model<UserDocument>,
+        @Inject(forwardRef(() => AuthService))
         private authService: AuthService
     ) { }
 
@@ -30,6 +31,11 @@ export class UsersService {
     async findByEmail(email: string): Promise<UserDocument> {
         this.logger.log(`findOne: ${email}`);
         return this.model.findOne({ email }).exec();
+    }
+
+    async findByEmailWithPasswd(email: string): Promise<UserDocument> {
+        this.logger.log(`findOne: ${email}`);
+        return this.model.findOne({ email }).populate('password').exec();
     }
 
     async deleteById(_id: string): Promise<DeleteResult> {
@@ -51,65 +57,5 @@ export class UsersService {
         }
         this.logger.log(`update:  ${JSON.stringify(updateObject)}`);
         return this.model.findByIdAndUpdate(param._id, { $set: updateObject }).exec();
-    }
-    async updateRefreshToken(_id: string, refreshToken: string): Promise<UserDocument> {
-        this.logger.log(`updateRefreshToken`);
-        return await this.update({
-            _id,
-            refreshToken
-        })
-    }
-
-    private async validateUser(email: string, passwd: string): Promise<any> {
-        return this.model
-            .findOne({ email })
-            .populate('password')
-            .exec()
-            .then(async (user: UserDocument) => {
-                const {
-                    password,
-                    name,
-                    email,
-                    _id
-                } = user;
-                const isValid = await this.authService.validatePasswordCredential(passwd, password);
-                return {
-                    isValid,
-                    user: {
-                        name,
-                        email
-                    },
-                    _id
-                }
-            });
-    }
-
-    async login(email: string, passwd: string): Promise<any> {
-        return this.validateUser(email, passwd)
-            .then(async (payload: any) => {
-                const { isValid, user, _id } = payload
-                if (isValid) {
-                    const tokens = await this.authService.getTokens(user);
-                    await this.updateRefreshToken(_id, tokens.refreshToken);
-                    return tokens
-                }
-                throw new UnauthorizedException('Invalid Access')
-            });
-    }
-
-    async logout(email: string): Promise<any> {
-        return this.findByEmail(email).then(async (user: UserDocument) => {
-            return this.updateRefreshToken(user._id, null);
-        })
-    }
-
-    async refreshToken(email: string, refreshToken: string): Promise<any> {
-        return this.findByEmail(email).then(async (user: UserDocument) => {
-            if (user.refreshToken === refreshToken) {
-                const tokens = await this.authService.refreshToken(refreshToken);
-                return tokens;
-            }
-            throw new UnauthorizedException('Invalid Access')
-        });
     }
 }

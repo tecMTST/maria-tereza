@@ -1,12 +1,15 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AuthService } from './auth/auth.service';
-import { JwtStrategyService } from './jwt/jwt-strategy/jwt-strategy.service';
-import { RefreshJwtStrategyService } from './jwt/refresh-jwt-strategy/refresh-jwt-strategy.service';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
+import { JwtStrategyService } from './strategies/jwt-strategy.service';
+import { RefreshJwtStrategyService } from './strategies/refresh-jwt-strategy.service';
+import { UsersModule } from '../users/users.module';
 
 @Module({
     imports: [
+        forwardRef(() => UsersModule),
         ConfigModule,
         JwtModule.registerAsync({
             useFactory: async () => ({
@@ -17,6 +20,7 @@ import { RefreshJwtStrategyService } from './jwt/refresh-jwt-strategy/refresh-jw
         })
     ],
     exports: [AuthService],
-    providers: [AuthService, JwtStrategyService, RefreshJwtStrategyService]
+    providers: [AuthService, JwtStrategyService, RefreshJwtStrategyService],
+    controllers: [AuthController]
 })
 export class AuthModule { } 

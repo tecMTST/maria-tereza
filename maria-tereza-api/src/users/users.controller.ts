@@ -26,28 +26,6 @@ export class UsersController {
         return this.usersService.findById(id);
     }
 
-    @Post('login')
-    @HttpCode(HttpStatus.OK)
-    login(@Body() param: { email: string, passwd: string }) {
-        return this.usersService.login(param.email, param.passwd);
-    }
-
-    @Post('logout')
-    @UseGuards(AuthGuard('jwt'))
-    @HttpCode(HttpStatus.NO_CONTENT)
-    logout(@Req() req: Request) {
-        const { user } = req
-        return this.usersService.logout(user['email']);
-    }
-
-    @Post('refresh')
-    @UseGuards(AuthGuard('jwt-refresh'))
-    @HttpCode(HttpStatus.OK)
-    refreshToken(@Req() req: Request) {
-        const { user } = req
-        return this.usersService.refreshToken(user['email'], user['refreshToken']);
-    }
-
     // @Put()
     // update(@Body() updateUserDto: UpdateUserDto) {
     //   return this.UsersService.update(updateUserDto);
