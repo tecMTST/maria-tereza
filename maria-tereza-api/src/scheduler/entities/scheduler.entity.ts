@@ -1,9 +1,10 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Exclude } from "class-transformer";
 import * as mongoose from 'mongoose';
 import { Document } from 'mongoose';
-import { ContactDocument } from '../../contacts/entities/contact.entity';
 import { Message, MessageDocument } from '../../messages/entities/message.entity';
-import { Contact } from '../../contacts/entities/contact.entity';
+import { SendToContact } from "./send-to-contact.entity";
+import { User } from '../../users/entities/user.entity';
 
 export type SchedulerDocument = Scheduler & Document;
 
@@ -22,19 +23,17 @@ export class Scheduler {
     })
     message: MessageDocument;
 
-    @Prop([{
-        required: true,
-        type: mongoose.Schema.Types.ObjectId,
-        ref: Contact.name
-    }])
-    sendToContact: ContactDocument[];
 
-    @Prop([{
+    @Prop([{ type: SendToContact }])
+    sendToContact?: SendToContact[];
+
+    @Prop({
         required: true,
         type: mongoose.Schema.Types.ObjectId,
-        ref: Contact.name
-    }])
-    sentToContact: ContactDocument[];
+        ref: 'User',
+    })
+    @Exclude()
+    user: User;
 
 }
 

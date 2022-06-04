@@ -1,6 +1,6 @@
-import { IsNotEmpty, ArrayMinSize } from "class-validator";
-import { ContactDocument } from "src/contacts/entities/contact.entity"
-import { MessageDocument } from "src/messages/entities/message.entity"
+import { ArrayMinSize, IsNotEmpty } from "class-validator";
+import { ContactDocument } from "src/contacts/entities/contact.entity";
+import { MessageDocument } from "src/messages/entities/message.entity";
 
 export class CreateSchedulerDto {
     @IsNotEmpty()

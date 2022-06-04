@@ -1,6 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Exclude } from 'class-transformer';
+import * as mongoose from 'mongoose';
 import { Document } from 'mongoose';
-import { Option } from './option.entity';
+import { User } from 'src/users/entities/user.entity';
 
 export type MessageDocument = Message & Document;
 
@@ -11,9 +13,14 @@ export class Message {
 
     @Prop({ required: true })
     message: string;
-
-    @Prop([{ type: Option }])
-    options?: Option[];
+    
+    @Prop({
+        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    })
+    @Exclude()
+    user: User;
 }
 
 export const MessageSchema = SchemaFactory.createForClass(Message);

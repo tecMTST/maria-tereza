@@ -11,28 +11,21 @@ export class UsersController {
     constructor(private readonly usersService: UsersService) { }
 
     @Post()
-    @HttpCode(HttpStatus.CREATED)
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @UseGuards(AuthGuard('jwt'))
     create(@Body() createUserDto: CreateUserDto) {
         return this.usersService.create(createUserDto);
     }
 
     @Get()
+    @UseGuards(AuthGuard('jwt'))
     findAll() {
         return this.usersService.findAll();
     }
 
     @Get(':id')
+    @UseGuards(AuthGuard('jwt'))
     findOne(@Param('id', ParseMongoObjectIdPipe) id: string) {
         return this.usersService.findById(id);
     }
-
-    // @Put()
-    // update(@Body() updateUserDto: UpdateUserDto) {
-    //   return this.UsersService.update(updateUserDto);
-    // }
-
-    // @Delete(':id')
-    // remove(@Param('id') id: string) {
-    //   return this.UsersService.deleteById(id);
-    // }
 }

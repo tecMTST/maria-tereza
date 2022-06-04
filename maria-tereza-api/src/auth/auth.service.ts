@@ -35,13 +35,15 @@ export class AuthService {
     async refreshToken(email: string, refreshToken: string): Promise<any> {
         return this.usersService.findByEmail(email).then(async (user: UserDocument) => {
             if (user.refreshToken === refreshToken) {
-                const tokenDecode = await this.jwtService.verifyAsync(refreshToken, {
+                const tokenDecode = await this.jwtService.verifyAsync<UserDocument>(refreshToken, {
                     secret: this.configService.get('JWT_REFRESH_SECRET')
                 });
-
-                const accessToken = await this.jwtService.signAsync(tokenDecode, {
+                const { name,email } = tokenDecode;
+                const accessToken = await this.jwtService.signAsync({ name, email }, {
+                    expiresIn: '60s',
                     secret: this.configService.get('JWT_SECRET')
                 })
+
                 return {
                     accessToken,
                     refreshToken
@@ -65,9 +67,9 @@ export class AuthService {
                 secret: this.configService.get('JWT_SECRET')
             }),
             this.jwtService.signAsync(param, {
-                expiresIn: '60m',
+                expiresIn: '15m',
                 secret: this.configService.get('JWT_REFRESH_SECRET')
-            })
+            }),
         ]);
         return {
             accessToken,

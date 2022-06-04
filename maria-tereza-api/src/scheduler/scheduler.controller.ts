@@ -1,35 +1,54 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
+import { UserFilterController } from 'src/common/controller/user-filter/user-filter.controller';
 import { ParseMongoObjectIdPipe } from 'src/common/pipes/parse-mongo-object-id.pipe';
+import { UsersService } from 'src/users/users.service';
 import { CreateSchedulerDto } from './dto/create-scheduler.dto';
 import { UpdateSchedulerDto } from './dto/update-scheduler.dto';
 import { SchedulerService } from './scheduler.service';
 
 @Controller('scheduler')
-export class SchedulerController {
-  constructor(private readonly schedulerService: SchedulerService) {}
+export class SchedulerController extends UserFilterController {
+  constructor(
+    private readonly schedulerService: SchedulerService,
+    usersService: UsersService
+  ) {
+    super(usersService);
+  }
 
   @Post()
-  create(@Body() createSchedulerDto: CreateSchedulerDto) {
-    return this.schedulerService.create(createSchedulerDto);
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async create(@Req() req: Request, @Body() createSchedulerDto: CreateSchedulerDto) {
+    const { message, sendToContact, when } = createSchedulerDto;
+    return this.schedulerService.create(await this.getUserId(req), { message, sendToContact, when });
   }
 
   @Get()
-  findAll() {
-    return this.schedulerService.findNextMessage();
+  @UseGuards(AuthGuard('jwt'))
+  async findAll(@Req() req: Request) {
+    return this.schedulerService.findAll(await this.getUserId(req));
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseMongoObjectIdPipe) id: string) {
-    return this.schedulerService.findById(id);
+  @UseGuards(AuthGuard('jwt'))
+  async findOne(@Req() req: Request, @Param('id', ParseMongoObjectIdPipe) id: string) {
+    return this.schedulerService.findById(await this.getUserId(req), id);
   }
 
   @Put()
-  update(@Body() updateSchedulerDto: UpdateSchedulerDto) {
-    return this.schedulerService.update(updateSchedulerDto);
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async update(@Req() req: Request, @Body() updateSchedulerDto: UpdateSchedulerDto) {
+    const { _id, message, sendToContact, when } = updateSchedulerDto;
+    return this.schedulerService.update(await this.getUserId(req), { _id, message, sendToContact, when });
   }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.schedulerService.deleteById(id);
-  // }
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(AuthGuard('jwt'))
+  async remove(@Req() req: Request, @Param('id') id: string) {
+    return this.schedulerService.deleteById(await this.getUserId(req), id);
+  }
 }

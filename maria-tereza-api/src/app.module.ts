@@ -8,6 +8,8 @@ import { ContactsModule } from './contacts/contacts.module';
 import { MessagesModule } from './messages/messages.module';
 import { SchedulerModule } from './scheduler/scheduler.module';
 import { UsersModule } from './users/users.module';
+import { UserFilterMongoService } from './common/services/user-filter-mongo/user-filter-mongo.service';
+import { UserFilterController } from './common/controller/user-filter/user-filter.controller';
 @Module({
   imports: [
     AppConfigModule,
@@ -24,7 +26,7 @@ import { UsersModule } from './users/users.module';
     SchedulerModule,
     UsersModule,
     AuthModule,
-  ],
+  ]
 })
 export class AppModule {
 }

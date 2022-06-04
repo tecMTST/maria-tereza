@@ -19,34 +19,28 @@ export class UsersService {
 
 
     async findById(_id: string): Promise<UserDocument> {
-        this.logger.log(`findById: ${_id}`);
         return this.model.findById(_id).exec();
     }
 
     async findAll(): Promise<UserDocument[]> {
-        this.logger.log('findAll');
         return this.model.find().exec();
     }
 
     async findByEmail(email: string): Promise<UserDocument> {
-        this.logger.log(`findOne: ${email}`);
         return this.model.findOne({ email }).exec();
     }
 
     async findByEmailWithPasswd(email: string): Promise<UserDocument> {
-        this.logger.log(`findOne: ${email}`);
         return this.model.findOne({ email }).populate('password').exec();
     }
 
     async deleteById(_id: string): Promise<DeleteResult> {
-        this.logger.log(`deleteById: ${_id}`);
         return this.model.deleteOne({ _id }).exec();
     }
 
     async create(param: CreateUserDto): Promise<UserDocument> {
         const hash = await this.authService.hashPassword(param.password);
         const createObj = { ...param, password: hash };
-        this.logger.log(`create: ${JSON.stringify(createObj)}`);
         return this.model.create(createObj);
     }
 
@@ -55,7 +49,6 @@ export class UsersService {
         if (!!param.password) {
             updateObject['password'] = await this.authService.hashPassword(param.password)
         }
-        this.logger.log(`update:  ${JSON.stringify(updateObject)}`);
         return this.model.findByIdAndUpdate(param._id, { $set: updateObject }).exec();
     }
 }
